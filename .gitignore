@@ -1,0 +1,8 @@
+bin/
+obj/
+voluntariado.db
+node_modules/
+.next/
+out/
+.env.local
+*.log

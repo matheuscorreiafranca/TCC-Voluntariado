@@ -1,0 +1,10 @@
+<svg width="804" height="458" viewBox="0 0 804 458" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="404" cy="70" r="70" fill="#2D7184"/>
+  <circle cx="236" cy="93" r="55" fill="#2D7184"/>
+  <circle cx="575" cy="93" r="55" fill="#2D7184"/>
+  <path d="M155 154c-26 0-42 11-49 35-6 20-11 68-7 82 3 10 10 17 21 17h62v-18c0-12 7-19 15-19s14 7 14 19v18h94c-25-26-39-52-39-79 0-20 6-38 17-54h-33l-18 18-25-19h-52Z" fill="#3F9EB7"/>
+  <path d="M653 154c26 0 42 11 49 35 6 20 11 68 7 82-3 10-10 17-21 17h-62v-18c0-12-7-19-15-19s-14 7-14 19v18h-94c25-26 39-52 39-79 0-20-6-38-17-54h33l18 18 25-19h52Z" fill="#3F9EB7"/>
+  <path d="M405 311c-9 0-18-3-25-9-61-49-92-83-92-123 0-32 24-56 55-56 24 0 45 12 62 36 17-24 38-36 62-36 31 0 55 24 55 56 0 40-31 74-92 123-7 6-16 9-25 9Z" fill="#3F9EB7"/>
+  <text x="0" y="438" font-family="Inter, Arial, sans-serif" font-size="126" font-weight="900" fill="#3F9EB7">Volunta</text>
+  <text x="506" y="438" font-family="Inter, Arial, sans-serif" font-size="126" font-weight="900" fill="#333333">Mais</text>
+</svg>
