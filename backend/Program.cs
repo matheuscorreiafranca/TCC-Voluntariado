@@ -14,19 +14,28 @@ builder.Services.AddControllers()
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-        ?? "Data Source=voluntariado.db";
-    options.UseSqlite(connectionString);
+        ?? "Server=localhost;Port=3306;Database=voluntariado_tccem;Uid=root;Pwd=;";
+    var serverVersion = ServerVersion.AutoDetect(connectionString);
+    options.UseMySql(connectionString, serverVersion);
 });
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", policy =>
         policy
-            .WithOrigins(
-                "http://localhost:3000",
-                "http://127.0.0.1:3000",
-                "http://localhost:3001",
-                "http://127.0.0.1:3001")
+            .SetIsOriginAllowed(origin =>
+            {
+                if (!Uri.TryCreate(origin, UriKind.Absolute, out var uri))
+                {
+                    return false;
+                }
+
+                return uri.Scheme is "http" or "https"
+                    && (uri.Host is "localhost" or "127.0.0.1"
+                        || uri.Host.StartsWith("192.168.", StringComparison.Ordinal)
+                        || uri.Host.StartsWith("10.", StringComparison.Ordinal)
+                        || uri.Host.StartsWith("172.", StringComparison.Ordinal));
+            })
             .AllowAnyHeader()
             .AllowAnyMethod());
 });
@@ -44,8 +53,10 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+var seedEnabled = builder.Configuration.GetValue("SeedDatabase", false);
+if (seedEnabled)
 {
+    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
     AppDbSeeder.Seed(db);

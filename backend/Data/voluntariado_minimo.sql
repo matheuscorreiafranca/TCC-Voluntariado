@@ -1,107 +1,200 @@
--- SQL de referência do modelo mínimo solicitado.
--- A API usa EF Core Code First + SQLite e cria voluntariado.db automaticamente no primeiro dotnet run.
--- Este arquivo fica como documentação da modelagem original do prompt.
+-- voluntariado_minimo.sql
+-- Modelagem minima para cumprir os requisitos principais do sistema de voluntariado.
+-- MySQL 8+ / MariaDB 10.4+
+-- Sem views, sem tabelas de status separadas, sem complexidade desnecessaria.
 
+SET FOREIGN_KEY_CHECKS = 0;
+
+DROP TABLE IF EXISTS feedbacks;
+DROP TABLE IF EXISTS notificacoes;
+DROP TABLE IF EXISTS inscricoes;
+DROP TABLE IF EXISTS oportunidades;
+DROP TABLE IF EXISTS voluntarios;
+DROP TABLE IF EXISTS instituicoes;
+DROP TABLE IF EXISTS usuarios;
+DROP TABLE IF EXISTS categorias;
+DROP TABLE IF EXISTS habilidades;
+DROP TABLE IF EXISTS palavras_bloqueadas;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- Usuarios do sistema: Admin, Instituicao e Voluntario
 CREATE TABLE usuarios (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome TEXT NOT NULL,
-    email TEXT NOT NULL UNIQUE,
-    senha TEXT NOT NULL,
-    telefone TEXT,
-    tipo TEXT NOT NULL,
-    cidade TEXT,
-    estado TEXT,
-    ativo INTEGER NOT NULL DEFAULT 1,
-    criado_em TEXT DEFAULT CURRENT_TIMESTAMP
+    Id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    Nome VARCHAR(150) NOT NULL,
+    Email VARCHAR(150) NOT NULL UNIQUE,
+    Senha VARCHAR(255) NOT NULL,
+    Telefone VARCHAR(30),
+    Tipo ENUM('Admin', 'Instituicao', 'Voluntario') NOT NULL,
+    Cidade VARCHAR(100),
+    Estado CHAR(2),
+    Ativo BOOLEAN NOT NULL DEFAULT TRUE,
+    CriadoEm DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Cadastro da instituicao
 CREATE TABLE instituicoes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    usuario_id INTEGER NOT NULL,
-    nome TEXT NOT NULL,
-    cnpj TEXT,
-    responsavel TEXT,
-    descricao TEXT,
-    status TEXT NOT NULL DEFAULT 'Pendente',
-    criado_em TEXT DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    Id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    UsuarioId BIGINT UNSIGNED NOT NULL,
+    Nome VARCHAR(180) NOT NULL,
+    Cnpj VARCHAR(30),
+    Responsavel VARCHAR(150),
+    Descricao TEXT,
+    Status ENUM('Pendente', 'Aprovada', 'Reprovada') NOT NULL DEFAULT 'Pendente',
+    CriadoEm DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (UsuarioId) REFERENCES usuarios(Id)
 );
 
+-- Cadastro do voluntario
 CREATE TABLE voluntarios (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    usuario_id INTEGER NOT NULL,
-    data_nascimento TEXT,
-    genero TEXT,
-    disponibilidade TEXT,
-    habilidades TEXT,
-    criado_em TEXT DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    Id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    UsuarioId BIGINT UNSIGNED NOT NULL,
+    DataNascimento DATE,
+    Genero VARCHAR(30),
+    Disponibilidade VARCHAR(255),
+    Habilidades TEXT,
+    CriadoEm DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (UsuarioId) REFERENCES usuarios(Id)
 );
 
+-- Categorias para campanhas, eventos e projetos
 CREATE TABLE categorias (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome TEXT NOT NULL UNIQUE
+    Id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    Nome VARCHAR(120) NOT NULL UNIQUE
 );
 
+-- Habilidades/funcoes simples para filtro e compatibilidade
 CREATE TABLE habilidades (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome TEXT NOT NULL UNIQUE
+    Id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    Nome VARCHAR(120) NOT NULL UNIQUE
 );
 
+-- Tabela unica para campanha, evento e projeto
 CREATE TABLE oportunidades (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    instituicao_id INTEGER NOT NULL,
-    categoria_id INTEGER,
-    titulo TEXT NOT NULL,
-    tipo TEXT NOT NULL,
-    descricao TEXT,
-    objetivo TEXT,
-    cidade TEXT,
-    estado TEXT,
-    data_inicio TEXT NOT NULL,
-    data_fim TEXT,
-    vagas INTEGER NOT NULL DEFAULT 1,
-    status TEXT NOT NULL DEFAULT 'Pendente',
-    criado_em TEXT DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (instituicao_id) REFERENCES instituicoes(id),
-    FOREIGN KEY (categoria_id) REFERENCES categorias(id)
+    Id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    InstituicaoId BIGINT UNSIGNED NOT NULL,
+    CategoriaId BIGINT UNSIGNED,
+    Titulo VARCHAR(180) NOT NULL,
+    Tipo ENUM('Campanha', 'Evento', 'Projeto') NOT NULL,
+    Descricao TEXT,
+    Objetivo TEXT,
+    Cidade VARCHAR(100),
+    Estado CHAR(2),
+    DataInicio DATETIME NOT NULL,
+    DataFim DATETIME,
+    Vagas INT UNSIGNED NOT NULL DEFAULT 1,
+    Status ENUM('Pendente', 'Aprovada', 'Reprovada', 'Ativa', 'Encerrada') NOT NULL DEFAULT 'Pendente',
+    CriadoEm DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (InstituicaoId) REFERENCES instituicoes(Id),
+    FOREIGN KEY (CategoriaId) REFERENCES categorias(Id)
 );
 
+-- Inscricao do voluntario em campanha/evento/projeto
 CREATE TABLE inscricoes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    oportunidade_id INTEGER NOT NULL,
-    voluntario_id INTEGER NOT NULL,
-    status TEXT NOT NULL DEFAULT 'Pendente',
-    motivo_reprovacao TEXT,
-    criado_em TEXT DEFAULT CURRENT_TIMESTAMP,
-    atualizado_em TEXT,
-    FOREIGN KEY (oportunidade_id) REFERENCES oportunidades(id),
-    FOREIGN KEY (voluntario_id) REFERENCES voluntarios(id),
-    UNIQUE (oportunidade_id, voluntario_id)
+    Id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    OportunidadeId BIGINT UNSIGNED NOT NULL,
+    VoluntarioId BIGINT UNSIGNED NOT NULL,
+    Status ENUM('Pendente', 'Aprovada', 'Reprovada', 'Concluida', 'Cancelada') NOT NULL DEFAULT 'Pendente',
+    MotivoReprovacao VARCHAR(500),
+    CriadoEm DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    AtualizadoEm DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (OportunidadeId) REFERENCES oportunidades(Id),
+    FOREIGN KEY (VoluntarioId) REFERENCES voluntarios(Id),
+    UNIQUE KEY inscricao_unica (OportunidadeId, VoluntarioId)
 );
 
+-- Feedback para voluntario ou instituicao apos participacao
 CREATE TABLE feedbacks (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    inscricao_id INTEGER NOT NULL,
-    autor TEXT NOT NULL,
-    nota INTEGER NOT NULL,
-    comentario TEXT,
-    criado_em TEXT DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (inscricao_id) REFERENCES inscricoes(id)
+    Id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    InscricaoId BIGINT UNSIGNED NOT NULL,
+    Autor ENUM('Instituicao', 'Voluntario') NOT NULL,
+    Nota TINYINT UNSIGNED NOT NULL,
+    Comentario VARCHAR(500),
+    CriadoEm DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (InscricaoId) REFERENCES inscricoes(Id)
 );
 
+-- Notificacoes simples
 CREATE TABLE notificacoes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    usuario_id INTEGER NOT NULL,
-    titulo TEXT NOT NULL,
-    mensagem TEXT NOT NULL,
-    lida INTEGER NOT NULL DEFAULT 0,
-    criado_em TEXT DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    Id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    UsuarioId BIGINT UNSIGNED NOT NULL,
+    Titulo VARCHAR(180) NOT NULL,
+    Mensagem VARCHAR(500) NOT NULL,
+    Lida BOOLEAN NOT NULL DEFAULT FALSE,
+    CriadoEm DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (UsuarioId) REFERENCES usuarios(Id)
 );
 
+-- Filtro de palavras inadequadas
 CREATE TABLE palavras_bloqueadas (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    palavra TEXT NOT NULL UNIQUE,
-    ativo INTEGER NOT NULL DEFAULT 1
+    Id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    Palavra VARCHAR(120) NOT NULL UNIQUE,
+    Ativo BOOLEAN NOT NULL DEFAULT TRUE
 );
+
+-- Dados basicos para testes
+
+INSERT INTO categorias (Nome) VALUES
+('Educacao'),
+('Saude'),
+('Meio Ambiente'),
+('Assistencia Social'),
+('Cultura');
+
+INSERT INTO habilidades (Nome) VALUES
+('Comunicacao'),
+('Organizacao'),
+('Ensino'),
+('Atendimento'),
+('Logistica');
+
+INSERT INTO palavras_bloqueadas (Palavra) VALUES
+('ofensa'),
+('xingamento'),
+('discriminacao');
+
+INSERT INTO usuarios (Nome, Email, Senha, Tipo, Cidade, Estado) VALUES
+('Administrador', 'admin@example.com', '123456', 'Admin', 'Cubatao', 'SP'),
+('Instituicao Exemplo', 'instituicao@example.com', '123456', 'Instituicao', 'Cubatao', 'SP'),
+('Voluntario Exemplo', 'voluntario@example.com', '123456', 'Voluntario', 'Cubatao', 'SP');
+
+INSERT INTO instituicoes (UsuarioId, Nome, Cnpj, Responsavel, Descricao, Status) VALUES
+(2, 'Instituicao Exemplo', '00.000.000/0001-00', 'Responsavel Exemplo', 'Instituicao de apoio social.', 'Aprovada');
+
+INSERT INTO voluntarios (UsuarioId, DataNascimento, Genero, Disponibilidade, Habilidades) VALUES
+(3, '2000-01-01', 'nao informado', 'Finais de semana', 'Comunicacao, Atendimento');
+
+INSERT INTO oportunidades (
+    InstituicaoId, CategoriaId, Titulo, Tipo, Descricao, Objetivo,
+    Cidade, Estado, DataInicio, DataFim, Vagas, Status
+) VALUES
+(1, 1, 'Campanha de Reforco Escolar', 'Campanha',
+ 'Campanha para apoio educacional.', 'Apoiar estudantes da comunidade.',
+ 'Cubatao', 'SP', NOW(), DATE_ADD(NOW(), INTERVAL 30 DAY), 20, 'Ativa'),
+
+(1, 4, 'Evento de Arrecadacao Solidaria', 'Evento',
+ 'Evento para arrecadar doacoes.', 'Organizar doacoes para familias.',
+ 'Cubatao', 'SP', DATE_ADD(NOW(), INTERVAL 7 DAY), DATE_ADD(NOW(), INTERVAL 8 DAY), 15, 'Ativa'),
+
+(1, 3, 'Projeto Bairro Limpo', 'Projeto',
+ 'Projeto de limpeza e conscientizacao ambiental.', 'Melhorar o bairro.',
+ 'Cubatao', 'SP', DATE_ADD(NOW(), INTERVAL 3 DAY), DATE_ADD(NOW(), INTERVAL 90 DAY), 30, 'Aprovada');
+
+-- Mapeamento dos requisitos atendidos:
+-- 1. Cadastrar instituicao              -> usuarios + instituicoes
+-- 2. Cadastrar voluntario               -> usuarios + voluntarios
+-- 3. Criar campanha sazonal             -> oportunidades.Tipo = 'Campanha'
+-- 4. Criar evento                       -> oportunidades.Tipo = 'Evento'
+-- 5. Criar projeto                      -> oportunidades.Tipo = 'Projeto'
+-- 6. Inscrever-se como voluntario       -> inscricoes
+-- 7. Notificar usuario                  -> notificacoes
+-- 8. Notificar instituicao de pedidos   -> notificacoes + inscricoes.Status = 'Pendente'
+-- 9. Aprovar voluntario                 -> inscricoes.Status = 'Aprovada'
+-- 10. Feedback ao voluntario            -> feedbacks.Autor = 'Instituicao'
+-- 11. Feedback a instituicao            -> feedbacks.Autor = 'Voluntario'
+-- 12. Fechar eventos apos prazo         -> oportunidades.Status = 'Encerrada'
+-- 13. Gerenciar voluntarios             -> voluntarios + inscricoes
+-- 14. Gerar relatorios                  -> SELECTs em oportunidades/inscricoes/feedbacks
+-- 15. Campanhas aprovadas/reprovadas    -> oportunidades.Status
+-- 16. Filtrar por categoria/funcao      -> categorias + habilidades/texto
+-- 17. Filtro de palavras inadequadas    -> palavras_bloqueadas
