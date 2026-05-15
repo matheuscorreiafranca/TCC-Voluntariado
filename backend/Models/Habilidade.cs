@@ -8,4 +8,6 @@ public class Habilidade
 
     [MaxLength(120)]
     public string Nome { get; set; } = string.Empty;
+
+    public ICollection<VoluntarioHabilidade> VoluntarioHabilidades { get; set; } = [];
 }

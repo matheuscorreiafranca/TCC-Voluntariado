@@ -1,10 +1,12 @@
 <svg width="804" height="458" viewBox="0 0 804 458" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="404" cy="70" r="70" fill="#2D7184"/>
-  <circle cx="236" cy="93" r="55" fill="#2D7184"/>
-  <circle cx="575" cy="93" r="55" fill="#2D7184"/>
-  <path d="M155 154c-26 0-42 11-49 35-6 20-11 68-7 82 3 10 10 17 21 17h62v-18c0-12 7-19 15-19s14 7 14 19v18h94c-25-26-39-52-39-79 0-20 6-38 17-54h-33l-18 18-25-19h-52Z" fill="#3F9EB7"/>
-  <path d="M653 154c26 0 42 11 49 35 6 20 11 68 7 82-3 10-10 17-21 17h-62v-18c0-12-7-19-15-19s-14 7-14 19v18h-94c25-26 39-52 39-79 0-20-6-38-17-54h33l18 18 25-19h52Z" fill="#3F9EB7"/>
-  <path d="M405 311c-9 0-18-3-25-9-61-49-92-83-92-123 0-32 24-56 55-56 24 0 45 12 62 36 17-24 38-36 62-36 31 0 55 24 55 56 0 40-31 74-92 123-7 6-16 9-25 9Z" fill="#3F9EB7"/>
-  <text x="0" y="438" font-family="Inter, Arial, sans-serif" font-size="126" font-weight="900" fill="#3F9EB7">Volunta</text>
-  <text x="506" y="438" font-family="Inter, Arial, sans-serif" font-size="126" font-weight="900" fill="#333333">Mais</text>
+  <rect x="322" width="160" height="160" rx="18" fill="#235F43"/>
+  <circle cx="402" cy="48" r="15" fill="white"/>
+  <circle cx="371" cy="61" r="11" fill="#DCEFE3"/>
+  <circle cx="433" cy="61" r="11" fill="#DCEFE3"/>
+  <path d="M359 77c-8 0-14 7-15 24l-1 13h36v-9c0-8 4-13 11-15-7-7-14-13-31-13Z" fill="#DCEFE3"/>
+  <path d="M445 77c8 0 14 7 15 24l1 13h-36v-9c0-8-4-13-11-15 7-7 14-13 31-13Z" fill="#DCEFE3"/>
+  <path d="M402 120c-2 0-4-.7-5.7-2.1C377 102.4 367 91.4 367 78.8 367 67.8 375.1 60 385.3 60c6.2 0 12.2 3 16.7 8.8C406.5 63 412.5 60 418.7 60 428.9 60 437 67.8 437 78.8c0 12.6-10 23.6-29.3 39.1A8.9 8.9 0 0 1 402 120Z" fill="white"/>
+  <text x="402" y="145" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="900" fill="white">IVG</text>
+  <text x="402" y="285" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="900" fill="#235F43">Instituto Vitor Gabriel</text>
+  <text x="402" y="348" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="800" fill="#647267">Voluntariado e cuidado familiar</text>
 </svg>

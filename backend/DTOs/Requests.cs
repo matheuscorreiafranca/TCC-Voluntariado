@@ -13,6 +13,11 @@ public record UsuarioCreateDto(
     string? Estado
 );
 
+public record AuthLoginDto(
+    [Required, EmailAddress, MaxLength(150)] string Email,
+    [Required, MaxLength(255)] string Senha
+);
+
 public record InstituicaoCreateDto(
     [Required] long UsuarioId,
     [Required, MaxLength(180)] string Nome,
@@ -26,7 +31,53 @@ public record VoluntarioCreateDto(
     DateOnly? DataNascimento,
     string? Genero,
     string? Disponibilidade,
-    string? Habilidades
+    string? Habilidades,
+    string? Bio,
+    string? Experiencia,
+    string? Interesses,
+    string? PreferenciasAcessibilidade,
+    bool NecessitaAcessibilidade,
+    bool AceitaContatoWhatsapp
+);
+
+public record VoluntarioCadastroDto(
+    [Required, MaxLength(150)] string Nome,
+    [Required, EmailAddress, MaxLength(150)] string Email,
+    [Required, MinLength(6), MaxLength(255)] string Senha,
+    string? Telefone,
+    string? Cidade,
+    string? Estado,
+    DateOnly? DataNascimento,
+    string? Genero,
+    string? Disponibilidade,
+    string? Habilidades,
+    string? Bio,
+    string? Experiencia,
+    string? Interesses,
+    string? PreferenciasAcessibilidade,
+    bool NecessitaAcessibilidade,
+    bool AceitaContatoWhatsapp
+);
+
+public record VoluntarioPerfilUpdateDto(
+    string? Nome,
+    string? Telefone,
+    string? Cidade,
+    string? Estado,
+    string? Genero,
+    string? Disponibilidade,
+    string? Bio,
+    string? Experiencia,
+    string? Interesses,
+    string? PreferenciasAcessibilidade,
+    bool NecessitaAcessibilidade,
+    bool AceitaContatoWhatsapp
+);
+
+public record VoluntarioHabilidadesUpdateDto(
+    long[] HabilidadeIds,
+    string? Interesses,
+    string? HabilidadesTexto
 );
 
 public record OportunidadeCreateDto(
@@ -41,7 +92,12 @@ public record OportunidadeCreateDto(
     [Required] DateTime DataInicio,
     DateTime? DataFim,
     int Vagas,
-    StatusOportunidade? Status
+    StatusOportunidade? Status,
+    string? Requisitos,
+    string? Turno,
+    string? LocalDetalhado,
+    bool AceitaSemFormacao,
+    bool PrecisaApoioCriancas
 );
 
 public record InscricaoCreateDto(

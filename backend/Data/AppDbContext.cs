@@ -15,6 +15,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Feedback> Feedbacks => Set<Feedback>();
     public DbSet<Notificacao> Notificacoes => Set<Notificacao>();
     public DbSet<PalavraBloqueada> PalavrasBloqueadas => Set<PalavraBloqueada>();
+    public DbSet<VoluntarioHabilidade> VoluntarioHabilidades => Set<VoluntarioHabilidade>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -44,6 +45,20 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 .WithOne(x => x.Voluntario)
                 .HasForeignKey<Voluntario>(x => x.UsuarioId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<VoluntarioHabilidade>(entity =>
+        {
+            entity.ToTable("voluntario_habilidades");
+            entity.HasIndex(x => new { x.VoluntarioId, x.HabilidadeId }).IsUnique();
+            entity.HasOne(x => x.Voluntario)
+                .WithMany(x => x.VoluntarioHabilidades)
+                .HasForeignKey(x => x.VoluntarioId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(x => x.Habilidade)
+                .WithMany(x => x.VoluntarioHabilidades)
+                .HasForeignKey(x => x.HabilidadeId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Categoria>(entity =>

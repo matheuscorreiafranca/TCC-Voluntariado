@@ -6,7 +6,31 @@ function resolveApiBaseUrl() {
   }
 
   if (typeof window !== "undefined") {
-    return `${window.location.protocol}//${window.location.hostname}:5000`;
+    if (window.location.port === "8011") {
+      return `http://${window.location.hostname}:5000`;
+    }
+
+    if (window.location.port === "8012") {
+      return `http://${window.location.hostname}:5000`;
+    }
+
+    if (window.location.port === "8013") {
+      return `http://${window.location.hostname}:5000`;
+    }
+
+    if (window.location.port === "8014") {
+      return `http://${window.location.hostname}:5000`;
+    }
+
+    if (window.location.port === "5000") {
+      return window.location.origin;
+    }
+
+    if (!window.location.port) {
+      return `${window.location.origin}/api`;
+    }
+
+    return `http://${window.location.hostname}:5000`;
   }
 
   return "http://127.0.0.1:5000";
@@ -23,7 +47,8 @@ export type Usuario = {
   id: number;
   nome: string;
   email: string;
-  tipo: "Admin" | "Instituicao" | "Voluntario";
+  tipo: "Superadmin" | "Admin" | "Instituicao" | "Voluntario";
+  telefone?: string;
   cidade?: string;
   estado?: string;
 };
@@ -42,14 +67,36 @@ export type Instituicao = {
 export type Voluntario = {
   id: number;
   usuarioId: number;
+  dataNascimento?: string;
+  genero?: string;
   disponibilidade?: string;
   habilidades?: string;
+  bio?: string;
+  experiencia?: string;
+  interesses?: string;
+  preferenciasAcessibilidade?: string;
+  necessitaAcessibilidade: boolean;
+  aceitaContatoWhatsapp: boolean;
   usuario?: Usuario;
+  voluntarioHabilidades?: VoluntarioHabilidade[];
 };
 
 export type Categoria = {
   id: number;
   nome: string;
+};
+
+export type Habilidade = {
+  id: number;
+  nome: string;
+};
+
+export type VoluntarioHabilidade = {
+  id: number;
+  voluntarioId: number;
+  habilidadeId: number;
+  nivelInteresse: string;
+  habilidade?: Habilidade;
 };
 
 export type Oportunidade = {
@@ -66,8 +113,14 @@ export type Oportunidade = {
   dataFim?: string;
   vagas: number;
   status: string;
+  requisitos?: string;
+  turno?: string;
+  localDetalhado?: string;
+  aceitaSemFormacao: boolean;
+  precisaApoioCriancas: boolean;
   instituicao?: Instituicao;
   categoria?: Categoria;
+  inscricoes?: Inscricao[];
 };
 
 export type Inscricao = {
@@ -78,6 +131,58 @@ export type Inscricao = {
   motivoReprovacao?: string;
   oportunidade?: Oportunidade;
   voluntario?: Voluntario;
+};
+
+export type Notificacao = {
+  id: number;
+  usuarioId: number;
+  titulo: string;
+  mensagem: string;
+  lida: boolean;
+  criadoEm: string;
+};
+
+export type Feedback = {
+  id: number;
+  inscricaoId: number;
+  autor: "Instituicao" | "Voluntario";
+  nota: number;
+  comentario?: string;
+  criadoEm: string;
+  inscricao?: Inscricao;
+};
+
+export type LoginResponse = {
+  usuario: Usuario;
+  voluntario?: Voluntario;
+  instituicao?: Instituicao;
+};
+
+export type Recomendacao = {
+  oportunidade: Oportunidade;
+  score: number;
+  motivo: string;
+};
+
+export type VoluntarioPortal = {
+  voluntario: Voluntario;
+  metricas: {
+    inscricoes: number;
+    pendentes: number;
+    aprovadas: number;
+    concluidas: number;
+    horasEstimadas: number;
+  };
+  inscricoes: Inscricao[];
+  recomendacoes: Recomendacao[];
+  notificacoes: Notificacao[];
+  feedbacks: Feedback[];
+};
+
+export type OportunidadeDetalhe = {
+  oportunidade: Oportunidade;
+  vagasOcupadas: number;
+  vagasDisponiveis: number;
 };
 
 export async function getDashboardData() {
@@ -96,4 +201,19 @@ export async function getDashboardData() {
     oportunidades: oportunidades.data,
     inscricoes: inscricoes.data
   };
+}
+
+export async function login(email: string, senha: string) {
+  const response = await api.post<LoginResponse>("/auth/login", { email, senha });
+  return response.data;
+}
+
+export async function getVoluntarioPortal(voluntarioId: number) {
+  const response = await api.get<VoluntarioPortal>(`/voluntarios/${voluntarioId}/portal`);
+  return response.data;
+}
+
+export async function getOportunidadeDetalhe(id: number) {
+  const response = await api.get<OportunidadeDetalhe>(`/oportunidades/${id}`);
+  return response.data;
 }

@@ -1,0 +1,6 @@
+@VoluntaMais.Api_HostAddress = http://localhost:5234
+
+GET {{VoluntaMais.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

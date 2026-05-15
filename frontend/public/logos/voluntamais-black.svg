@@ -1,9 +1,4 @@
-<svg width="304" height="148" viewBox="0 0 304 148" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="152" cy="21" r="21" fill="black"/>
-  <circle cx="101" cy="32" r="16" fill="black"/>
-  <circle cx="204" cy="32" r="16" fill="black"/>
-  <path d="M69 62c-18 0-25 12-27 36h43V86c0-9 5-14 12-14 5 0 11 4 20 12-5-9-7-17-5-22H69Z" fill="black"/>
-  <path d="M235 62c18 0 25 12 27 36h-43V86c0-9-5-14-12-14-5 0-11 4-20 12 5-9 7-17 5-22h43Z" fill="black"/>
-  <path d="M152 101c-30-24-45-39-45-57 0-15 12-26 27-26 9 0 16 5 18 12 2-7 9-12 18-12 15 0 27 11 27 26 0 18-15 33-45 57Z" fill="black"/>
-  <text x="3" y="141" font-family="Inter, Arial, sans-serif" font-size="45" font-weight="900" fill="black">VoluntaMais</text>
+<svg width="640" height="160" viewBox="0 0 640 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <text x="3" y="74" font-family="Inter, Arial, sans-serif" font-size="54" font-weight="900" fill="black">Instituto Vitor Gabriel</text>
+  <text x="4" y="120" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="800" fill="#333333">Voluntariado e cuidado familiar</text>
 </svg>

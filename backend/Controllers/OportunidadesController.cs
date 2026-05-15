@@ -33,7 +33,7 @@ public class OportunidadesController(AppDbContext db) : ControllerBase
     }
 
     [HttpGet("{id:long}")]
-    public async Task<ActionResult<Oportunidade>> GetById(long id)
+    public async Task<ActionResult> GetById(long id)
     {
         var oportunidade = await db.Oportunidades
             .AsNoTracking()
@@ -42,7 +42,18 @@ public class OportunidadesController(AppDbContext db) : ControllerBase
             .Include(x => x.Inscricoes)
             .FirstOrDefaultAsync(x => x.Id == id);
 
-        return oportunidade is null ? NotFound() : Ok(oportunidade);
+        if (oportunidade is null)
+        {
+            return NotFound();
+        }
+
+        var vagasOcupadas = oportunidade.Inscricoes.Count(x => x.Status is StatusInscricao.Pendente or StatusInscricao.Aprovada);
+        return Ok(new
+        {
+            oportunidade,
+            vagasOcupadas,
+            vagasDisponiveis = Math.Max(0, oportunidade.Vagas - vagasOcupadas)
+        });
     }
 
     [HttpPost]
@@ -76,7 +87,12 @@ public class OportunidadesController(AppDbContext db) : ControllerBase
             DataInicio = dto.DataInicio,
             DataFim = dto.DataFim,
             Vagas = dto.Vagas,
-            Status = dto.Status ?? StatusOportunidade.Pendente
+            Status = dto.Status ?? StatusOportunidade.Pendente,
+            Requisitos = dto.Requisitos,
+            Turno = dto.Turno,
+            LocalDetalhado = dto.LocalDetalhado,
+            AceitaSemFormacao = dto.AceitaSemFormacao,
+            PrecisaApoioCriancas = dto.PrecisaApoioCriancas
         };
 
         db.Oportunidades.Add(oportunidade);

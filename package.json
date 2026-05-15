@@ -1,0 +1,29 @@
+{
+  "name": "tc-voluntariado",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "sh -c 'dotnet run --project Back-end/VoluntaMais.Api.csproj --urls http://0.0.0.0:5055 & api_pid=$!; trap \"kill $api_pid 2>/dev/null\" EXIT INT TERM; until curl -fsS http://127.0.0.1:5055/swagger/index.html >/dev/null 2>&1; do sleep 1; done; vite --host 0.0.0.0 --port 5173'",
+    "preview:full": "sh -c 'dotnet run --project Back-end/VoluntaMais.Api.csproj --urls http://0.0.0.0:5055 & api_pid=$!; trap \"kill $api_pid 2>/dev/null\" EXIT INT TERM; until curl -fsS http://127.0.0.1:5055/swagger/index.html >/dev/null 2>&1; do sleep 1; done; vite preview --host 0.0.0.0 --port 4173'",
+    "frontend:dev": "vite --host 0.0.0.0 --port 5173",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 4173",
+    "backend:build": "dotnet build Back-end/VoluntaMais.Api.csproj",
+    "backend:dev": "dotnet run --project Back-end/VoluntaMais.Api.csproj --urls http://0.0.0.0:5055"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^5.0.0",
+    "lucide-react": "^0.468.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwindcss": "^4.0.0",
+    "tw-animate-css": "^1.0.0",
+    "vite": "^6.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.0",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "typescript": "^5.7.3"
+  }
+}

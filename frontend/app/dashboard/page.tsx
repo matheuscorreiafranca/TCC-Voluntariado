@@ -1,11 +1,13 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
+import { AuthGate } from "@/components/AuthGate";
 import { LoadingBlock } from "@/components/LoadingBlock";
 import { getDashboardData } from "@/services/api";
+import { IVG_NOME, onlyIvgOportunidades, sortEventosFirst } from "@/services/ivg";
 
 type DashboardData = Awaited<ReturnType<typeof getDashboardData>>;
 
@@ -23,78 +25,96 @@ export default function DashboardPage() {
 
   const pendentes = data?.inscricoes.filter((item) => item.status === "Pendente").length ?? 0;
   const aprovadas = data?.inscricoes.filter((item) => item.status === "Aprovada").length ?? 0;
+  const oportunidades = sortEventosFirst(onlyIvgOportunidades(data?.oportunidades ?? []));
+  const eventos = oportunidades.filter((item) => item.tipo === "Evento");
 
   return (
-    <AppShell>
-      <div className="page grid">
-        <section className="card hero">
-          <div>
-            <p className="eyebrow">VoluntaMais MVP</p>
-            <h1>Gestão simples para conectar voluntários e instituições.</h1>
-            <p className="muted">
-              Cadastre oportunidades, acompanhe inscrições, aprove voluntários e centralize
-              feedbacks em uma experiência limpa de produto SaaS.
-            </p>
-            <div style={{ display: "flex", gap: 12, marginTop: 18, flexWrap: "wrap" }}>
-              <Link href="/oportunidades" className="button">Ver oportunidades</Link>
-              <Link href="/oportunidades/criar" className="button secondary">Criar oportunidade</Link>
+    <AuthGate role="admin">
+      <AppShell>
+        <div className="portal-container">
+          <header className="portal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <h1>Painel de Controle IVG</h1>
+              <p>Gestão centralizada de voluntários e ações institucionais.</p>
             </div>
-          </div>
-          <Image className="hero-logo" src="/logos/voluntamais-full.svg" alt="VoluntaMais" width={360} height={220} />
-        </section>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <Link href="/oportunidades/criar" className="button">Nova Ação</Link>
+              <Link href="/inscricoes" className="button secondary">Gerenciar Vínculos</Link>
+            </div>
+          </header>
 
-        {loading && <LoadingBlock />}
-        {error && <div className="toast">{error}</div>}
+          {loading && <LoadingBlock />}
+          {error && <div className="card" style={{ color: 'var(--danger)', padding: '20px' }}>{error}</div>}
 
-        {data && (
-          <>
-            <section className="grid grid-4">
-              <article className="card card-pad kpi">
-                <span className="muted">Instituições</span>
-                <strong>{data.instituicoes.length}</strong>
-                <span className="muted">Organizações cadastradas</span>
-              </article>
-              <article className="card card-pad kpi">
-                <span className="muted">Voluntários</span>
-                <strong>{data.voluntarios.length}</strong>
-                <span className="muted">Pessoas disponíveis</span>
-              </article>
-              <article className="card card-pad kpi">
-                <span className="muted">Oportunidades</span>
-                <strong>{data.oportunidades.length}</strong>
-                <span className="muted">Campanhas, eventos e projetos</span>
-              </article>
-              <article className="card card-pad kpi">
-                <span className="muted">Inscrições pendentes</span>
-                <strong>{pendentes}</strong>
-                <span className="muted">{aprovadas} já aprovadas</span>
-              </article>
-            </section>
-
-            <section className="grid grid-2">
-              <div className="card card-pad">
-                <h2>Próximas oportunidades</h2>
-                <div className="grid">
-                  {data.oportunidades.slice(0, 4).map((item) => (
-                    <div key={item.id} className="opportunity-meta" style={{ justifyContent: "space-between" }}>
-                      <strong>{item.titulo}</strong>
-                      <span className="status">{item.tipo}</span>
-                    </div>
-                  ))}
+          {data && (
+            <>
+              <div className="metric-grid">
+                <div className="metric-card">
+                  <span className="metric-value">{data.voluntarios.length}</span>
+                  <span className="metric-label">Voluntários Totais</span>
+                </div>
+                <div className="metric-card">
+                  <span className="metric-value">{eventos.length}</span>
+                  <span className="metric-label">Eventos Ativos</span>
+                </div>
+                <div className="metric-card">
+                  <span className="metric-value">{pendentes}</span>
+                  <span className="metric-label">Vínculos Pendentes</span>
+                </div>
+                <div className="metric-card">
+                  <span className="metric-value">{aprovadas}</span>
+                  <span className="metric-label">Vínculos Aprovados</span>
                 </div>
               </div>
-              <div className="card card-pad">
-                <h2>Fila de decisão</h2>
-                <p className="muted">
-                  Use a tela de inscrições para aprovar ou reprovar voluntários. O sistema
-                  registra notificações automaticamente para instituição e voluntário.
-                </p>
-                <Link href="/inscricoes" className="button secondary">Gerenciar inscrições</Link>
+
+              <div className="portal-content-grid">
+                <div className="grid-main">
+                  <div className="card">
+                    <div className="section-title">
+                      <h2>Próximas Ações IVG</h2>
+                      <Link href="/oportunidades" className="button outline" style={{ height: '36px', fontSize: '14px' }}>Ver todas</Link>
+                    </div>
+                    <div className="compact-list">
+                      {oportunidades.slice(0, 6).map((item) => (
+                        <div className="compact-item" key={item.id}>
+                          <div style={{ display: 'grid', gap: '2px' }}>
+                            <strong style={{ fontSize: '15px' }}>{item.titulo}</strong>
+                            <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{item.cidade}/{item.estado} • {item.tipo}</span>
+                          </div>
+                          <span className={`badge ${item.tipo === 'Evento' ? 'badge-approved' : 'badge-pending'}`} style={{ fontSize: '10px' }}>
+                            {item.tipo}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid-aside">
+                  <div className="card">
+                    <div className="section-title">
+                      <h2>Dica de Gestão</h2>
+                    </div>
+                    <div style={{ padding: '4px' }}>
+                      <p style={{ fontSize: '14px', lineHeight: '1.6', color: 'var(--muted)' }}>
+                        Priorize a análise de vínculos para <strong>Eventos</strong>. 
+                        Voluntários que se inscrevem em eventos costumam ter maior urgência de confirmação para organização de logística e recepção.
+                      </p>
+                      <hr style={{ margin: '20px 0', border: 'none', borderTop: '1px solid var(--line)' }} />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ width: '40px', height: '40px', background: 'var(--panel-soft)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Image src="/logos/voluntamais-icon.svg" alt="IVG" width={24} height={24} />
+                        </div>
+                        <span style={{ fontSize: '13px', fontWeight: 600 }}>Instituto Vitor Gabriel</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </section>
-          </>
-        )}
-      </div>
-    </AppShell>
+            </>
+          )}
+        </div>
+      </AppShell>
+    </AuthGate>
   );
 }

@@ -16,7 +16,7 @@ public class InscricoesController(AppDbContext db) : ControllerBase
         return Ok(await db.Inscricoes
             .AsNoTracking()
             .Include(x => x.Oportunidade)
-            .Include(x => x.Voluntario)!.ThenInclude(x => x.Usuario)
+            .Include(x => x.Voluntario!).ThenInclude(x => x.Usuario)
             .OrderByDescending(x => x.Id)
             .ToListAsync());
     }

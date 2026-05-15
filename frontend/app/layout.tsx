@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "VoluntaMais",
-  description: "MVP de voluntariado para instituições, voluntários e oportunidades"
+  title: "Instituto Vitor Gabriel",
+  description: "MVP de voluntariado para eventos, projetos e campanhas do Instituto Vitor Gabriel"
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -25,6 +25,16 @@ public class Oportunidade
     public DateTime? DataFim { get; set; }
     public int Vagas { get; set; } = 1;
     public StatusOportunidade Status { get; set; } = StatusOportunidade.Pendente;
+    public string? Requisitos { get; set; }
+
+    [MaxLength(60)]
+    public string? Turno { get; set; }
+
+    [MaxLength(180)]
+    public string? LocalDetalhado { get; set; }
+
+    public bool AceitaSemFormacao { get; set; } = true;
+    public bool PrecisaApoioCriancas { get; set; }
     public DateTime CriadoEm { get; set; } = DateTime.UtcNow;
 
     public Instituicao? Instituicao { get; set; }

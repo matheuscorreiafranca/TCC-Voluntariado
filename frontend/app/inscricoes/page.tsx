@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
+import { AuthGate } from "@/components/AuthGate";
 import { LoadingBlock } from "@/components/LoadingBlock";
 import { StatusBadge } from "@/components/StatusBadge";
 import { api, Inscricao } from "@/services/api";
+import { IVG_NOME, isIvgOportunidade } from "@/services/ivg";
 
 export default function InscricoesPage() {
   const [items, setItems] = useState<Inscricao[]>([]);
@@ -14,7 +16,7 @@ export default function InscricoesPage() {
   async function load() {
     setLoading(true);
     const response = await api.get<Inscricao[]>("/inscricoes");
-    setItems(response.data);
+    setItems(response.data.filter((item) => item.oportunidade && isIvgOportunidade(item.oportunidade)));
     setLoading(false);
   }
 
@@ -33,13 +35,14 @@ export default function InscricoesPage() {
   }, []);
 
   return (
+    <AuthGate role="admin">
     <AppShell>
       <div className="page">
         <header className="page-header">
           <div>
-            <p className="eyebrow">Inscrições</p>
-            <h1>Aprovação de voluntários</h1>
-            <p className="muted">Acompanhe solicitações e tome decisões rapidamente.</p>
+            <p className="eyebrow">{IVG_NOME}</p>
+            <h1>Vínculo de voluntários aos eventos</h1>
+            <p className="muted">Aprove voluntários para ações do instituto e acompanhe quem está alocado.</p>
           </div>
         </header>
 
@@ -50,7 +53,7 @@ export default function InscricoesPage() {
               <thead>
                 <tr>
                   <th>Voluntário</th>
-                  <th>Oportunidade</th>
+                  <th>Ação IVG</th>
                   <th>Status</th>
                   <th>Ações</th>
                 </tr>
@@ -75,5 +78,6 @@ export default function InscricoesPage() {
         )}
       </div>
     </AppShell>
+    </AuthGate>
   );
 }

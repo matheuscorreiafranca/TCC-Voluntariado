@@ -2,6 +2,7 @@ namespace Voluntariado.Api.Models;
 
 public enum TipoUsuario
 {
+    Superadmin,
     Admin,
     Instituicao,
     Voluntario

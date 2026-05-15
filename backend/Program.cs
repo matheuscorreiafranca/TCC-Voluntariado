@@ -45,9 +45,9 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "VoluntaMais API",
+        Title = "Instituto Vitor Gabriel API",
         Version = "v1",
-        Description = "MVP de voluntariado com instituições, voluntários, oportunidades, inscrições e feedbacks."
+        Description = "MVP de voluntariado do Instituto Vitor Gabriel com eventos, projetos, campanhas, voluntários, inscrições e feedbacks."
     });
 });
 
@@ -65,7 +65,7 @@ if (seedEnabled)
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "VoluntaMais API v1");
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Instituto Vitor Gabriel API v1");
     options.RoutePrefix = "swagger";
 });
 

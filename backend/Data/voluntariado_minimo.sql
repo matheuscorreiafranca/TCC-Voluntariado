@@ -18,14 +18,14 @@ DROP TABLE IF EXISTS palavras_bloqueadas;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
--- Usuarios do sistema: Admin, Instituicao e Voluntario
+-- Usuarios do sistema: Superadmin, Admin da instituicao e Voluntario
 CREATE TABLE usuarios (
     Id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     Nome VARCHAR(150) NOT NULL,
     Email VARCHAR(150) NOT NULL UNIQUE,
     Senha VARCHAR(255) NOT NULL,
     Telefone VARCHAR(30),
-    Tipo ENUM('Admin', 'Instituicao', 'Voluntario') NOT NULL,
+    Tipo ENUM('Superadmin', 'Admin', 'Instituicao', 'Voluntario') NOT NULL,
     Cidade VARCHAR(100),
     Estado CHAR(2),
     Ativo BOOLEAN NOT NULL DEFAULT TRUE,
@@ -135,18 +135,18 @@ CREATE TABLE palavras_bloqueadas (
 -- Dados basicos para testes
 
 INSERT INTO categorias (Nome) VALUES
-('Educacao'),
-('Saude'),
-('Meio Ambiente'),
 ('Assistencia Social'),
-('Cultura');
+('Acolhimento Familiar'),
+('Inclusao'),
+('Cuidado'),
+('Formacao');
 
 INSERT INTO habilidades (Nome) VALUES
-('Comunicacao'),
-('Organizacao'),
-('Ensino'),
-('Atendimento'),
-('Logistica');
+('Acolhimento'),
+('Organizacao de eventos'),
+('Cuidado de criancas'),
+('Atendimento a familias'),
+('Apoio operacional');
 
 INSERT INTO palavras_bloqueadas (Palavra) VALUES
 ('ofensa'),
@@ -154,31 +154,34 @@ INSERT INTO palavras_bloqueadas (Palavra) VALUES
 ('discriminacao');
 
 INSERT INTO usuarios (Nome, Email, Senha, Tipo, Cidade, Estado) VALUES
-('Administrador', 'admin@example.com', '123456', 'Admin', 'Cubatao', 'SP'),
-('Instituicao Exemplo', 'instituicao@example.com', '123456', 'Instituicao', 'Cubatao', 'SP'),
-('Voluntario Exemplo', 'voluntario@example.com', '123456', 'Voluntario', 'Cubatao', 'SP');
+('Superadmin IVG', 'superadmin@ivg.local', '123456', 'Superadmin', 'Santos', 'SP'),
+('Admin Instituto Vitor Gabriel', 'admin@ivg.local', '123456', 'Instituicao', 'Santos', 'SP'),
+('Voluntario IVG', 'voluntario@ivg.local', '123456', 'Voluntario', 'Santos', 'SP');
 
 INSERT INTO instituicoes (UsuarioId, Nome, Cnpj, Responsavel, Descricao, Status) VALUES
-(2, 'Instituicao Exemplo', '00.000.000/0001-00', 'Responsavel Exemplo', 'Instituicao de apoio social.', 'Aprovada');
+(2, 'Instituto Vitor Gabriel', NULL, 'Instituto Vitor Gabriel', 'Acoes que promovem o protagonismo da pessoa com deficiencia e o cuidado a sua familia.', 'Aprovada');
 
 INSERT INTO voluntarios (UsuarioId, DataNascimento, Genero, Disponibilidade, Habilidades) VALUES
-(3, '2000-01-01', 'nao informado', 'Finais de semana', 'Comunicacao, Atendimento');
+(3, '2000-01-01', 'nao informado', 'Eventos e encontros', 'Acolhimento, apoio operacional, cuidado de criancas');
 
 INSERT INTO oportunidades (
     InstituicaoId, CategoriaId, Titulo, Tipo, Descricao, Objetivo,
     Cidade, Estado, DataInicio, DataFim, Vagas, Status
 ) VALUES
-(1, 1, 'Campanha de Reforco Escolar', 'Campanha',
- 'Campanha para apoio educacional.', 'Apoiar estudantes da comunidade.',
- 'Cubatao', 'SP', NOW(), DATE_ADD(NOW(), INTERVAL 30 DAY), 20, 'Ativa'),
+(1, 3, 'Programa de Protagonismo da Pessoa com Deficiencia', 'Campanha',
+ 'Acao voltada ao fortalecimento do protagonismo da pessoa com deficiencia.',
+ 'Promover protagonismo, autonomia e participacao social da pessoa com deficiencia.',
+ 'Santos', 'SP', NOW(), DATE_ADD(NOW(), INTERVAL 30 DAY), 20, 'Ativa'),
 
-(1, 4, 'Evento de Arrecadacao Solidaria', 'Evento',
- 'Evento para arrecadar doacoes.', 'Organizar doacoes para familias.',
- 'Cubatao', 'SP', DATE_ADD(NOW(), INTERVAL 7 DAY), DATE_ADD(NOW(), INTERVAL 8 DAY), 15, 'Ativa'),
+(1, 2, 'Encontro de Acolhimento para Maes Atipicas', 'Evento',
+ 'Encontro de acolhimento, escuta e orientacao para maes atipicas e familiares.',
+ 'Acolher maes atipicas, fortalecer vinculos e orientar sobre cuidado, direitos e rede de apoio.',
+ 'Santos', 'SP', DATE_ADD(NOW(), INTERVAL 7 DAY), DATE_ADD(NOW(), INTERVAL 8 DAY), 15, 'Ativa'),
 
-(1, 3, 'Projeto Bairro Limpo', 'Projeto',
- 'Projeto de limpeza e conscientizacao ambiental.', 'Melhorar o bairro.',
- 'Cubatao', 'SP', DATE_ADD(NOW(), INTERVAL 3 DAY), DATE_ADD(NOW(), INTERVAL 90 DAY), 30, 'Aprovada');
+(1, 3, 'Projeto Autonomia e Vida Independente', 'Projeto',
+ 'Projeto para estimular autonomia, autoestima, convivencia comunitaria e participacao ativa.',
+ 'Incentivar independencia, confianca e inclusao social da pessoa com deficiencia.',
+ 'Santos', 'SP', DATE_ADD(NOW(), INTERVAL 3 DAY), DATE_ADD(NOW(), INTERVAL 90 DAY), 30, 'Aprovada');
 
 -- Mapeamento dos requisitos atendidos:
 -- 1. Cadastrar instituicao              -> usuarios + instituicoes

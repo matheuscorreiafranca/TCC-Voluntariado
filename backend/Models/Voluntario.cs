@@ -15,8 +15,16 @@ public class Voluntario
     public string? Disponibilidade { get; set; }
 
     public string? Habilidades { get; set; }
+    public string? Bio { get; set; }
+    public string? Experiencia { get; set; }
+    public string? Interesses { get; set; }
+    public string? PreferenciasAcessibilidade { get; set; }
+    public bool NecessitaAcessibilidade { get; set; }
+    public bool AceitaContatoWhatsapp { get; set; } = true;
     public DateTime CriadoEm { get; set; } = DateTime.UtcNow;
+    public DateTime? AtualizadoEm { get; set; }
 
     public Usuario? Usuario { get; set; }
     public ICollection<Inscricao> Inscricoes { get; set; } = [];
+    public ICollection<VoluntarioHabilidade> VoluntarioHabilidades { get; set; } = [];
 }
