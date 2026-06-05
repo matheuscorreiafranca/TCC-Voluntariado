@@ -37,7 +37,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
         ?? throw new InvalidOperationException("ConnectionStrings__DefaultConnection is required.");
 
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 36)));
 });
 
 // Application Services
@@ -109,8 +109,10 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 });
 
-using (var scope = app.Services.CreateScope())
+var seedEnabled = builder.Configuration.GetValue("SeedDatabase", false);
+if (seedEnabled)
 {
+    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var env = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
     await db.Database.EnsureCreatedAsync();
