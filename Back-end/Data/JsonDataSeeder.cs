@@ -8,6 +8,13 @@ namespace VoluntaMais.Api.Data
     {
         private const string LegacyInvalidPasswordHash = "$2a$11$HLrYDyJiYOV13E.I4jjD8eN4hKfS7qRXNedp19zYh72iaU.qDSe56";
         private const string DefaultPasswordHash = "$2a$11$q1XSDJeu4Dies.apWitrWeqMJz//7NT6dytA.1.BuuftTXiUgc.36";
+        private static readonly HashSet<string> AllowedOpportunityTitles = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Programa de Protagonismo da Pessoa com Deficiência",
+            "Encontro de Acolhimento para Mães Atípicas",
+            "Vivência de Inclusão para Crianças com Deficiência",
+            "Projeto Tecendo Projetos Inclusivos"
+        };
 
         public static async Task SeedAsync(AppDbContext db, IWebHostEnvironment env)
         {
@@ -31,6 +38,11 @@ namespace VoluntaMais.Api.Data
 
             foreach (var item in items)
             {
+                if (!AllowedOpportunityTitles.Contains(item.Title))
+                {
+                    continue;
+                }
+
                 var categoria = await EnsureCategoriaAsync(db, item.Category);
                 var (cidade, estado) = SplitLocation(item.Location);
 

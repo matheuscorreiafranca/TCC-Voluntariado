@@ -1,0 +1,78 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: voluntariado-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - voluntariado
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u$${MYSQL_USER} -p$${MYSQL_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: voluntariado-api
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:5000
+      ConnectionStrings__DefaultConnection: Server=mysql;Port=3306;Database=${MYSQL_DATABASE};Uid=${MYSQL_USER};Pwd=${MYSQL_PASSWORD};TreatTinyAsBoolean=true;
+      Cors__AllowedOrigins__0: ${FRONTEND_PUBLIC_URL}
+      SeedDatabase: ${SEED_DATABASE:-false}
+      Swagger__Enabled: ${SWAGGER_ENABLED:-false}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - voluntariado
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${BACKEND_PUBLIC_URL}
+    container_name: voluntariado-frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: ${BACKEND_PUBLIC_URL}
+    depends_on:
+      - backend
+    networks:
+      - voluntariado
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: voluntariado-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - voluntariado
+
+volumes:
+  mysql_data:
+
+networks:
+  voluntariado:
+    driver: bridge

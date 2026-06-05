@@ -41,7 +41,8 @@ namespace VoluntaMais.Api.Services
         public string GenerateJwtToken(Usuario usuario)
         {
             var jwtSettings = _configuration.GetSection("Jwt");
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"] ?? "chave_super_secreta_padrao_voluntamais_123456789"));
+            var jwtKey = jwtSettings["Key"] ?? throw new InvalidOperationException("Jwt__Key is required.");
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             
             var claims = new[]
             {

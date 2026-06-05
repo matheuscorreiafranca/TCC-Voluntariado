@@ -27,7 +27,9 @@ builder.Services.AddApiVersioning(options =>
 // Database setup
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? throw new InvalidOperationException("ConnectionStrings__DefaultConnection is required.");
+
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 });
 
@@ -39,15 +41,37 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+            ?? builder.Configuration["Cors:AllowedOrigins"]?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            ?? [];
+
+        if (allowedOrigins.Length > 0)
+        {
+            policy.WithOrigins(allowedOrigins)
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+            return;
+        }
+
+        if (builder.Environment.IsDevelopment())
+        {
+            policy.SetIsOriginAllowed(origin =>
+                Uri.TryCreate(origin, UriKind.Absolute, out var uri)
+                && uri.Scheme is "http" or "https"
+                && uri.Host is "localhost" or "127.0.0.1")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+            return;
+        }
+
+        throw new InvalidOperationException("Cors__AllowedOrigins__0 is required in production.");
     });
 });
 
 // JWT Authentication setup
 var jwtSettings = builder.Configuration.GetSection("Jwt");
-var key = Encoding.ASCII.GetBytes(jwtSettings["Key"] ?? "chave_super_secreta_padrao_voluntamais_123456789");
+var jwtKey = jwtSettings["Key"] ?? throw new InvalidOperationException("Jwt__Key is required.");
+var key = Encoding.ASCII.GetBytes(jwtKey);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -81,7 +105,8 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+var swaggerEnabled = app.Environment.IsDevelopment() || builder.Configuration.GetValue("Swagger:Enabled", false);
+if (swaggerEnabled)
 {
     app.UseSwagger();
     app.UseSwaggerUI();

@@ -12,29 +12,29 @@ public static class AppDbSeeder
         }
 
         db.Categorias.AddRange(
-            new Categoria { Nome = "Assistência Social" },
+            new Categoria { Nome = "Assistencia Social" },
             new Categoria { Nome = "Acolhimento Familiar" },
-            new Categoria { Nome = "Inclusão" },
+            new Categoria { Nome = "Inclusao" },
             new Categoria { Nome = "Cuidado" },
-            new Categoria { Nome = "Formação" }
+            new Categoria { Nome = "Formacao" }
         );
 
         db.Habilidades.AddRange(
             new Habilidade { Nome = "Acolhimento" },
-            new Habilidade { Nome = "Organização de eventos" },
-            new Habilidade { Nome = "Cuidado de crianças" },
-            new Habilidade { Nome = "Atendimento a famílias" },
+            new Habilidade { Nome = "Organizacao de eventos" },
+            new Habilidade { Nome = "Cuidado de criancas" },
+            new Habilidade { Nome = "Atendimento a familias" },
             new Habilidade { Nome = "Apoio operacional" },
             new Habilidade { Nome = "Escuta ativa" },
             new Habilidade { Nome = "Tecnologia assistiva" },
-            new Habilidade { Nome = "Recepção" },
-            new Habilidade { Nome = "Comunicação" }
+            new Habilidade { Nome = "Recepcao" },
+            new Habilidade { Nome = "Comunicacao" }
         );
 
         db.PalavrasBloqueadas.AddRange(
             new PalavraBloqueada { Palavra = "ofensa" },
             new PalavraBloqueada { Palavra = "xingamento" },
-            new PalavraBloqueada { Palavra = "discriminação" }
+            new PalavraBloqueada { Palavra = "discriminacao" }
         );
 
         var admin = new Usuario
@@ -59,7 +59,7 @@ public static class AppDbSeeder
 
         var usuarioVoluntario = new Usuario
         {
-            Nome = "Voluntário IVG",
+            Nome = "Voluntario IVG",
             Email = "voluntario@ivg.local",
             Senha = "123456",
             Tipo = TipoUsuario.Voluntario,
@@ -74,9 +74,8 @@ public static class AppDbSeeder
         {
             UsuarioId = usuarioInstituicao.Id,
             Nome = "Instituto Vitor Gabriel",
-            Cnpj = null,
             Responsavel = "Instituto Vitor Gabriel",
-            Descricao = "Ações que promovem o protagonismo da pessoa com deficiência e o cuidado à sua família.",
+            Descricao = "Acoes que promovem o protagonismo da pessoa com deficiencia e o cuidado a sua familia.",
             Status = StatusInstituicao.Aprovada
         };
 
@@ -84,12 +83,12 @@ public static class AppDbSeeder
         {
             UsuarioId = usuarioVoluntario.Id,
             DataNascimento = new DateOnly(2000, 1, 1),
-            Genero = "não informado",
+            Genero = "nao informado",
             Disponibilidade = "Eventos e encontros",
-            Habilidades = "Acolhimento, apoio operacional, cuidado de crianças",
-            Bio = "Voluntário disponível para apoiar ações do IVG com acolhimento e organização.",
+            Habilidades = "Acolhimento, apoio operacional, cuidado de criancas",
+            Bio = "Voluntario disponivel para apoiar acoes do IVG com acolhimento e organizacao.",
             Experiencia = "Apoio em eventos sociais e cuidado familiar.",
-            Interesses = "Mães atípicas, inclusão, cuidado de crianças, acolhimento familiar",
+            Interesses = "Maes atipicas, inclusao, cuidado de criancas, acolhimento familiar",
             AceitaContatoWhatsapp = true
         };
 
@@ -102,18 +101,18 @@ public static class AppDbSeeder
             {
                 InstituicaoId = instituicao.Id,
                 CategoriaId = 3,
-                Titulo = "Programa de Protagonismo da Pessoa com Deficiência",
+                Titulo = "Programa de Protagonismo da Pessoa com Deficiencia",
                 Tipo = TipoOportunidade.Campanha,
-                Descricao = "Ação voltada ao fortalecimento do protagonismo da pessoa com deficiência.",
-                Objetivo = "Promover protagonismo, autonomia e participação social da pessoa com deficiência.",
+                Descricao = "Acao voltada ao fortalecimento do protagonismo da pessoa com deficiencia.",
+                Objetivo = "Promover protagonismo, autonomia e participacao social da pessoa com deficiencia.",
                 Cidade = "Santos",
                 Estado = "SP",
                 DataInicio = DateTime.UtcNow,
                 DataFim = DateTime.UtcNow.AddDays(30),
                 Vagas = 20,
                 Status = StatusOportunidade.Ativa,
-                Requisitos = "Postura acolhedora, disponibilidade e compromisso com inclusão.",
-                Turno = "Conforme programação",
+                Requisitos = "Postura acolhedora, disponibilidade e compromisso com inclusao.",
+                Turno = "Conforme programacao",
                 LocalDetalhado = "Santos/SP - local definido pelo IVG",
                 AceitaSemFormacao = true
             },
@@ -121,40 +120,21 @@ public static class AppDbSeeder
             {
                 InstituicaoId = instituicao.Id,
                 CategoriaId = 2,
-                Titulo = "Encontro de Acolhimento para Mães Atípicas",
+                Titulo = "Encontro de Acolhimento para Maes Atipicas",
                 Tipo = TipoOportunidade.Evento,
-                Descricao = "Encontro de acolhimento, escuta e orientação para mães atípicas e familiares.",
-                Objetivo = "Acolher mães atípicas, fortalecer vínculos e orientar sobre cuidado, direitos e rede de apoio.",
+                Descricao = "Encontro de acolhimento, escuta e orientacao para maes atipicas e familiares.",
+                Objetivo = "Acolher maes atipicas, fortalecer vinculos e orientar sobre cuidado, direitos e rede de apoio.",
                 Cidade = "Santos",
                 Estado = "SP",
                 DataInicio = DateTime.UtcNow.AddDays(7),
                 DataFim = DateTime.UtcNow.AddDays(8),
                 Vagas = 15,
                 Status = StatusOportunidade.Ativa,
-                Requisitos = "Acolhimento, escuta e apoio na organização do encontro.",
+                Requisitos = "Acolhimento, escuta e apoio na organizacao do encontro.",
                 Turno = "Tarde",
-                LocalDetalhado = "Santos/SP - encontro de famílias",
+                LocalDetalhado = "Santos/SP - encontro de familias",
                 AceitaSemFormacao = true,
                 PrecisaApoioCriancas = true
-            },
-            new Oportunidade
-            {
-                InstituicaoId = instituicao.Id,
-                CategoriaId = 3,
-                Titulo = "Projeto Autonomia e Vida Independente",
-                Tipo = TipoOportunidade.Projeto,
-                Descricao = "Projeto para estimular autonomia, autoestima, convivência comunitária e participação ativa.",
-                Objetivo = "Incentivar independência, confiança e inclusão social da pessoa com deficiência.",
-                Cidade = "Santos",
-                Estado = "SP",
-                DataInicio = DateTime.UtcNow.AddDays(3),
-                DataFim = DateTime.UtcNow.AddDays(90),
-                Vagas = 30,
-                Status = StatusOportunidade.Aprovada,
-                Requisitos = "Apoio operacional e convivência inclusiva.",
-                Turno = "Manhã ou tarde",
-                LocalDetalhado = "Santos/SP - atividades do IVG",
-                AceitaSemFormacao = true
             }
         );
 

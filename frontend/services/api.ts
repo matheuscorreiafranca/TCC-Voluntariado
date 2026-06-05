@@ -1,36 +1,14 @@
 import axios from "axios";
 
 function resolveApiBaseUrl() {
-  if (process.env.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL;
+  const configuredUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
+
+  if (configuredUrl) {
+    return configuredUrl.replace(/\/$/, "");
   }
 
-  if (typeof window !== "undefined") {
-    if (window.location.port === "8011") {
-      return `http://${window.location.hostname}:5000`;
-    }
-
-    if (window.location.port === "8012") {
-      return `http://${window.location.hostname}:5000`;
-    }
-
-    if (window.location.port === "8013") {
-      return `http://${window.location.hostname}:5000`;
-    }
-
-    if (window.location.port === "8014") {
-      return `http://${window.location.hostname}:5000`;
-    }
-
-    if (window.location.port === "5000") {
-      return window.location.origin;
-    }
-
-    if (!window.location.port) {
-      return `${window.location.origin}/api`;
-    }
-
-    return `http://${window.location.hostname}:5000`;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("NEXT_PUBLIC_API_URL precisa estar configurada em produção.");
   }
 
   return "http://127.0.0.1:5000";

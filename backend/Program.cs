@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.HttpOverrides;
 using Voluntariado.Api.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,7 +15,10 @@ builder.Services.AddControllers()
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-        ?? "Server=localhost;Port=3306;Database=voluntariado_tccem;Uid=root;Pwd=;";
+        ?? (builder.Environment.IsDevelopment()
+            ? "Server=127.0.0.1;Port=3306;Database=voluntariado_tccem;Uid=root;Pwd=;TreatTinyAsBoolean=true;"
+            : throw new InvalidOperationException("ConnectionStrings__DefaultConnection is required in production."));
+
     var serverVersion = ServerVersion.AutoDetect(connectionString);
     options.UseMySql(connectionString, serverVersion);
 });
@@ -22,22 +26,32 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", policy =>
-        policy
-            .SetIsOriginAllowed(origin =>
-            {
-                if (!Uri.TryCreate(origin, UriKind.Absolute, out var uri))
-                {
-                    return false;
-                }
+    {
+        var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+            ?? builder.Configuration["Cors:AllowedOrigins"]?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            ?? [];
 
-                return uri.Scheme is "http" or "https"
-                    && (uri.Host is "localhost" or "127.0.0.1"
-                        || uri.Host.StartsWith("192.168.", StringComparison.Ordinal)
-                        || uri.Host.StartsWith("10.", StringComparison.Ordinal)
-                        || uri.Host.StartsWith("172.", StringComparison.Ordinal));
-            })
-            .AllowAnyHeader()
-            .AllowAnyMethod());
+        if (allowedOrigins.Length > 0)
+        {
+            policy.WithOrigins(allowedOrigins)
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+            return;
+        }
+
+        if (builder.Environment.IsDevelopment())
+        {
+            policy.SetIsOriginAllowed(origin =>
+                Uri.TryCreate(origin, UriKind.Absolute, out var uri)
+                && uri.Scheme is "http" or "https"
+                && uri.Host is "localhost" or "127.0.0.1")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+            return;
+        }
+
+        throw new InvalidOperationException("Cors__AllowedOrigins__0 is required in production.");
+    });
 });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -53,6 +67,11 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
+
 var seedEnabled = builder.Configuration.GetValue("SeedDatabase", false);
 if (seedEnabled)
 {
@@ -62,16 +81,21 @@ if (seedEnabled)
     AppDbSeeder.Seed(db);
 }
 
-app.UseSwagger();
-app.UseSwaggerUI(options =>
+var swaggerEnabled = app.Environment.IsDevelopment() || builder.Configuration.GetValue("Swagger:Enabled", false);
+if (swaggerEnabled)
 {
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Instituto Vitor Gabriel API v1");
-    options.RoutePrefix = "swagger";
-});
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Instituto Vitor Gabriel API v1");
+        options.RoutePrefix = "swagger";
+    });
+}
 
 app.UseCors("Frontend");
 app.MapControllers();
 
-app.MapGet("/", () => Results.Redirect("/swagger"));
+app.MapGet("/", () => Results.Ok(new { name = "Instituto Vitor Gabriel API", status = "ok" }));
+app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 
 app.Run();

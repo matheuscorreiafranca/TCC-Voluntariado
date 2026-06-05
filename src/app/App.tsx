@@ -14,6 +14,7 @@ import { NovoProjetoModal } from './components/modals/NovoProjetoModal';
 import { CertificadosModal } from './components/modals/CertificadosModal';
 import { CalendarioModal } from './components/modals/CalendarioModal';
 import { AccessibilityWidget } from './components/ui/AccessibilityWidget';
+import { VLibrasWidget } from './components/ui/VLibrasWidget';
 
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { cadastrarVoluntario } from './services/voluntarioService';
@@ -433,6 +434,7 @@ function AppContent() {
       />
 
       <AccessibilityWidget />
+      <VLibrasWidget />
 
       <LoginModal
         showLogin={showLogin}

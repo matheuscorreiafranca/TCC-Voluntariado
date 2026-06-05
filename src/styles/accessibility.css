@@ -59,3 +59,33 @@
 html {
   transition: font-size 0.2s ease-in-out;
 }
+
+div[vw].vlibras-widget {
+  bottom: 0;
+  display: block;
+  margin: 12px !important;
+  min-height: 40px;
+  min-width: 40px;
+  position: fixed;
+  right: 0;
+  z-index: 2147483645 !important;
+}
+
+div[vw].vlibras-widget [vw-access-button] {
+  background: #1351b4 url("https://vlibras.gov.br/app/assets/access_icon.svg?v=20260510") center / 32px 32px no-repeat;
+  border-radius: 8px;
+  bottom: 0;
+  cursor: pointer;
+  display: flex;
+  min-height: 40px;
+  min-width: 40px;
+  overflow: hidden;
+  position: absolute;
+  right: 0;
+  z-index: 2147483646 !important;
+}
+
+div[vw].vlibras-widget [vw-plugin-wrapper] {
+  position: relative;
+  z-index: 2147483647 !important;
+}
