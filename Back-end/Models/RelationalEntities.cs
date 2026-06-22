@@ -75,6 +75,9 @@ namespace VoluntaMais.Api.Models
 
         [MaxLength(500)]
         public string? Comentario { get; set; }
+
+        [MaxLength(4000)]
+        public string? RespostasJson { get; set; }
     }
 
     public class Notificacao : BaseEntity

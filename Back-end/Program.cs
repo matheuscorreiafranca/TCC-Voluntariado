@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,11 @@ if (!string.IsNullOrWhiteSpace(port))
 }
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -109,14 +114,19 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 });
 
+var schemaEnabled = builder.Configuration.GetValue("ApplyDatabaseSchema", false);
 var seedEnabled = builder.Configuration.GetValue("SeedDatabase", false);
-if (seedEnabled)
+if (schemaEnabled || seedEnabled)
 {
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    var env = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
-    await db.Database.EnsureCreatedAsync();
-    await JsonDataSeeder.SeedAsync(db, env);
+    await DatabaseSchemaInitializer.EnsureSchemaAsync(db);
+
+    if (seedEnabled)
+    {
+        var env = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
+        await JsonDataSeeder.SeedAsync(db, env);
+    }
 }
 
 // Configure the HTTP request pipeline.

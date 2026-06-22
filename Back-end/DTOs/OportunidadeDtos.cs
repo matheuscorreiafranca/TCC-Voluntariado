@@ -45,4 +45,22 @@ namespace VoluntaMais.Api.DTOs
         [MaxLength(500)]
         public string? MotivoReprovacao { get; set; }
     }
+
+    public class FeedbackCreateDto
+    {
+        [Required]
+        public long InscricaoId { get; set; }
+
+        [Required]
+        public FeedbackAutor Autor { get; set; }
+
+        [Range(1, 5)]
+        public byte Nota { get; set; }
+
+        [MaxLength(500)]
+        public string? Comentario { get; set; }
+
+        [MaxLength(4000)]
+        public string? RespostasJson { get; set; }
+    }
 }

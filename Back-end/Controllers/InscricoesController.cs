@@ -33,8 +33,34 @@ namespace VoluntaMais.Api.Controllers
                     i.Id,
                     i.OportunidadeId,
                     OportunidadeTitulo = i.Oportunidade.Titulo,
+                    Oportunidade = new
+                    {
+                        i.Oportunidade.Id,
+                        i.Oportunidade.InstituicaoId,
+                        i.Oportunidade.Titulo,
+                        Tipo = i.Oportunidade.Tipo.ToString(),
+                        i.Oportunidade.Cidade,
+                        i.Oportunidade.Estado,
+                        Instituicao = new
+                        {
+                            i.Oportunidade.Instituicao.Id,
+                            i.Oportunidade.Instituicao.Nome,
+                            i.Oportunidade.Instituicao.Responsavel
+                        }
+                    },
                     i.VoluntarioId,
                     VoluntarioNome = i.Voluntario.Usuario.Nome,
+                    Voluntario = new
+                    {
+                        i.Voluntario.Id,
+                        i.Voluntario.UsuarioId,
+                        Usuario = new
+                        {
+                            i.Voluntario.Usuario.Id,
+                            i.Voluntario.Usuario.Nome,
+                            i.Voluntario.Usuario.Email
+                        }
+                    },
                     Status = i.Status.ToString(),
                     i.MotivoReprovacao,
                     i.DataInsercao,
