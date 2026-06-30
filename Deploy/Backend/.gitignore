@@ -1,0 +1,12 @@
+bin/
+obj/
+.env
+.env.*
+!.env.example
+*.db
+*.log
+logs/
+publish/
+publish-test/
+voluntariado_tccem.sql
+voluntariado_tccem.sql.gz

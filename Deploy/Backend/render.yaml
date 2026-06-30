@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: voluntamais-api
+    runtime: docker
+    dockerfilePath: Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__DefaultConnection
+        sync: false
+        description: "A string de conexão com o banco de dados MySQL de produção (ex: Server=host;Port=3306;Database=db;User=user;Password=pass;)"
+      - key: Cors__AllowedOrigins__0
+        value: https://voluntamais-teste.vercel.app
+        description: "Origem pública do frontend na Vercel"
+      - key: Jwt__Key
+        generateValue: true
+        description: "Chave secreta gerada automaticamente para assinar os tokens JWT"
+      - key: RunMigrations
+        value: "false"
+        description: "Não execute migrations SQLite antigas contra MySQL em produção"
+      - key: ApplyDatabaseSchema
+        value: "true"
+        description: "Cria/repara de forma idempotente tabelas e colunas esperadas pelo backend"
+      - key: SeedDatabase
+        value: "false"
+        description: "Habilita ou desabilita a semeadura de dados de teste (defina como true na primeira execução se desejar dados de teste)"
+      - key: Swagger__Enabled
+        value: "false"

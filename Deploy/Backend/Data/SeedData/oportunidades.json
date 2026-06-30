@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "title": "Encontro de Acolhimento para Mães Atípicas",
+    "category": "Assistencia Social",
+    "location": "Santos - SP",
+    "time": "Conforme programacao",
+    "vagasTotal": 15,
+    "vagasPreenchidas": 1,
+    "descricao": "Encontro de acolhimento, escuta qualificada e orientacao para maes atipicas e familiares de pessoas com deficiencia.",
+    "requisitos": ["Disponibilidade para atuacao voluntaria", "Postura acolhedora", "Compromisso com a inclusao"],
+    "beneficios": ["Certificado de participacao", "Experiencia em acolhimento", "Convivencia com rede de apoio"],
+    "organizacao": "Instituto Victor Gabriel",
+    "contato": "acolhimento@institutovictorgabriel.org.br"
+  },
+  {
+    "id": 2,
+    "title": "Projeto Tecendo Projetos Inclusivos",
+    "category": "Educacao Inclusiva",
+    "location": "Santos - SP",
+    "time": "Flexivel - Escolas Parceiras",
+    "vagasTotal": 10,
+    "vagasPreenchidas": 4,
+    "descricao": "Apoie a assessoria pedagogica em escolas participantes, auxiliando educadores na construcao de praticas inclusivas que respeitam a individualidade e potencialidades de cada aluno.",
+    "requisitos": ["Formacao em educacao ou areas afins", "Conhecimento em educacao inclusiva", "Disponibilidade para visitas escolares"],
+    "beneficios": ["Certificado de participacao", "Formacao continuada em inclusao", "Networking educacional"],
+    "organizacao": "Instituto Victor Gabriel",
+    "contato": "tecendoprojetos@institutovictorgabriel.org.br"
+  }
+]
